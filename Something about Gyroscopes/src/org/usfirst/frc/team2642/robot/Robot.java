@@ -27,6 +27,7 @@ public class Robot extends IterativeRobot {
     double Kp = 0.03;
     double angle;
     int autoLoopCounter;  
+    int cow;
     public void robotInit() {                                                               //This function is run when the robot is first started up
         gyro = new Gyro(0); 
        
@@ -55,11 +56,32 @@ public class Robot extends IterativeRobot {
     
     public void teleopInit(){                                                               //This function is called once each time the robot enters tele-operated mode
     	gyro.reset();
+    	cow = 0;
     }
     
     public void teleopPeriodic() {                                                          //This function is called periodically during operator control
         System.out.println(gyro.getAngle());
-        robotDrive.mecanumDrive_Cartesian(stick.getX(), stick.getY(), stick.getRawAxis(4), 0);
+        System.out.println(cow);
+    	angle = gyro.getAngle();
+
+        if (stick.getRawButton(1) && cow < 1){
+        	gyro.reset();
+        	cow++;
+        
+        }else if (stick.getRawButton(1) && cow >= 1){
+        	robotDrive.mecanumDrive_Cartesian(stick.getRawAxis(4)*-1, 0, angle*Kp, 0);
+        	cow++;
+
+        }else if( !stick.getRawButton(1) && cow >= 1){
+        	cow = 0;
+        }else{
+        	robotDrive.mecanumDrive_Cartesian(stick.getRawAxis(4)*-1, stick.getY(), stick.getX()*-1, 0);
+
+        }
+        
+        
+        
+        
     }
 
     public void testPeriodic() {                                                            //This function is called periodically during test mode
